@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import styles from "./page-transition.module.css";
 
 const IRIS_MS = 900;
@@ -20,41 +20,74 @@ function aperturePoints(radius: number) {
  * rather than running straight out from the middle.
  */
 function bladeSeams(radius: number) {
-  const point = (angle: number, distance: number) =>
-    `${(50 + Math.cos(angle) * distance).toFixed(2)} ${(50 + Math.sin(angle) * distance).toFixed(2)}`;
   return Array.from({ length: BLADES }, (_, index) => {
-    const angle = ((index + 0.5) / BLADES) * Math.PI * 2 - Math.PI / 2;
-    const sweep = (24 * Math.PI) / 180;
-    return `M ${point(angle, radius)} Q ${point(angle + sweep * 0.45, 80)} ${point(angle + sweep, 170)}`;
+    const a1 = (index / BLADES) * Math.PI * 2 - Math.PI / 2;
+    const a2 = ((index + 1) / BLADES) * Math.PI * 2 - Math.PI / 2;
+    
+    const startX = 50 + radius * Math.cos(a1);
+    const startY = 50 + radius * Math.sin(a1);
+    
+    const nextX = 50 + radius * Math.cos(a2);
+    const nextY = 50 + radius * Math.sin(a2);
+    
+    const angle = Math.atan2(nextY - startY, nextX - startX);
+    const L = 10000;
+    
+    const endX = startX + L * Math.cos(angle);
+    const endY = startY + L * Math.sin(angle);
+    
+    return `M ${startX.toFixed(2)} ${startY.toFixed(2)} L ${endX.toFixed(2)} ${endY.toFixed(2)}`;
   });
 }
 
 const HOLE = aperturePoints(30);
 const SEAMS = bladeSeams(30);
 
-/**
- * A route change commits before this can run, so the iris opens on the page
- * that has just arrived rather than closing over the one being left.
- */
 export default function PageTransition() {
   const pathname = usePathname();
-  // Compared against the route this mounted on rather than a "first run" flag:
-  // effects are invoked twice in development, which fired the iris on load.
+  const router = useRouter();
   const shown = useRef(pathname);
-  const [playing, setPlaying] = useState(false);
+  const [phase, setPhase] = useState<'idle' | 'closing' | 'opening'>('opening');
 
   useEffect(() => {
     if (shown.current === pathname) return;
     shown.current = pathname;
-    setPlaying(true);
-    const done = setTimeout(() => setPlaying(false), IRIS_MS);
+    setPhase('opening');
+    const done = setTimeout(() => setPhase('idle'), IRIS_MS);
     return () => clearTimeout(done);
   }, [pathname]);
 
-  if (!playing) return null;
+  useEffect(() => {
+    const handleGlobalClick = (e: MouseEvent) => {
+      const target = (e.target as HTMLElement).closest('a');
+      if (!target || !target.href) return;
+      
+      if (target.target === '_blank' || target.origin !== window.location.origin) return;
+      
+      const url = new URL(target.href);
+      if (url.pathname === window.location.pathname && url.search === window.location.search) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      
+      const destination = url.pathname + url.search + url.hash;
+      
+      setPhase('closing');
+      
+      setTimeout(() => {
+        router.push(destination);
+      }, IRIS_MS);
+    };
+
+    document.addEventListener('click', handleGlobalClick, { capture: true });
+    return () => document.removeEventListener('click', handleGlobalClick, { capture: true });
+  }, [router]);
+
+  if (phase === 'idle') return null;
   const maskId = "iris-hole";
   return (
-    <div key={pathname} className={styles.iris} aria-hidden="true">
+    <div key={phase === 'closing' ? 'closing' : pathname} className={`${styles.iris} ${phase === 'closing' ? styles.closing : styles.opening}`} aria-hidden="true">
       <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
         <defs>
           <mask id={maskId}>
@@ -65,12 +98,12 @@ export default function PageTransition() {
           </mask>
         </defs>
         <rect x="0" y="0" width="100" height="100" fill="#0b0c0b" mask={`url(#${maskId})`} />
+        <rect x="0" y="0" width="100" height="100" fill="#0b0c0b" className={styles.shutterFade} />
         <g className={styles.blades}>
           <polygon className={styles.ring} points={HOLE} />
           {SEAMS.map((seam, index) => <path className={styles.edge} key={index} d={seam} />)}
         </g>
       </svg>
-      <span className={styles.rec}><b />REC</span>
     </div>
   );
 }

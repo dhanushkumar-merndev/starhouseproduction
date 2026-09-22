@@ -16,13 +16,18 @@
 .blades {
   transform-box: view-box;
   transform-origin: 50px 50px;
-  animation: aperture 900ms cubic-bezier(0.62, 0, 0.2, 1) forwards;
+}
+.opening .blades {
+  animation: apertureOpen 900ms cubic-bezier(0.62, 0, 0.2, 1) forwards;
+}
+.closing .blades {
+  animation: apertureClose 900ms cubic-bezier(0.8, 0, 0.38, 1) forwards;
 }
 
 .edge {
   fill: none;
-  stroke: rgb(243 242 238 / 14%);
-  stroke-width: 1;
+  stroke: rgb(243 242 238 / 35%);
+  stroke-width: 2;
   vector-effect: non-scaling-stroke;
 }
 
@@ -32,55 +37,66 @@
   stroke: var(--accent);
   stroke-width: 2;
   vector-effect: non-scaling-stroke;
-  animation: ringFade 900ms ease-out forwards;
+}
+.opening .ring {
+  animation: ringFadeOpen 900ms ease-out forwards;
+}
+.closing .ring {
+  animation: ringFadeClose 900ms ease-in forwards;
 }
 
-.rec {
-  position: absolute;
-  top: clamp(18px, 3vw, 46px);
-  left: clamp(18px, 3vw, 46px);
-  display: inline-flex;
-  gap: 10px;
-  align-items: center;
-  font: 10px var(--font-mono);
-  color: rgb(243 242 238 / 70%);
-  letter-spacing: 0.22em;
-  animation: recFade 900ms ease-out forwards;
-}
 
-.rec b {
-  width: 7px;
-  height: 7px;
-  background: var(--accent);
-  border-radius: 50%;
-}
 
-@keyframes aperture {
-  0% { transform: rotate(-42deg) scale(0); }
+@keyframes apertureOpen {
+  0% { transform: rotate(-42deg) scale(0.04); }
   14% { transform: rotate(-38deg) scale(0.04); }
   100% { transform: rotate(0deg) scale(4.2); }
 }
+@keyframes apertureClose {
+  0% { transform: rotate(0deg) scale(4.2); }
+  86% { transform: rotate(-38deg) scale(0.04); }
+  100% { transform: rotate(-42deg) scale(0.04); }
+}
 
-@keyframes ringFade {
+@keyframes ringFadeOpen {
   0%, 12% { opacity: 0; }
   30% { opacity: 1; }
   72% { opacity: 0.5; }
   100% { opacity: 0; }
 }
-
-@keyframes recFade {
-  0% { opacity: 1; }
-  34% { opacity: 1; }
-  62% { opacity: 0; }
-  100% { opacity: 0; }
+@keyframes ringFadeClose {
+  0% { opacity: 0; }
+  28% { opacity: 0.5; }
+  70% { opacity: 1; }
+  88%, 100% { opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .blades, .ring, .rec { animation: none; }
-  .iris { background: #0b0c0b; animation: settle 260ms ease forwards; }
-  .iris svg, .rec { display: none; }
+  .blades, .ring { animation: none !important; }
+  .iris.opening { background: #0b0c0b; animation: settle 260ms ease forwards; }
+  .iris.closing { background: #0b0c0b; opacity: 1; animation: none; }
+  .iris svg { display: none; }
   @keyframes settle {
     0% { opacity: 1; }
     100% { opacity: 0; }
   }
+}
+
+
+.shutterFade {
+  pointer-events: none;
+}
+.opening .shutterFade {
+  animation: fadeOut 300ms ease-out forwards;
+}
+.closing .shutterFade {
+  animation: fadeIn 300ms 600ms ease-in forwards;
+}
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
 }

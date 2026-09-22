@@ -50,37 +50,56 @@
   background: var(--accent);
 }
 
-/* The stage carries the perspective; the cards are laid out from its middle. */
+/* The stage is only the frame the ring turns inside: no perspective here, it
+   rides on the ring's own transform so the vanishing point is the ring's
+   centre — which is where the camera has to be for the far card to read
+   smallest. The cards nearest the camera overhang the stage, which is why the
+   section clips rather than this. */
 .stage {
   position: relative;
-  height: clamp(300px, 31vw, 440px);
+  height: clamp(340px, 36vw, 560px);
   margin-top: clamp(14px, 1.6vw, 26px);
-  perspective: 1400px;
-  perspective-origin: 50% 50%;
   touch-action: pan-y;
   cursor: grab;
-  list-style: none;
-  padding: 0;
 }
 
 .stage[data-dragging="true"] {
   cursor: grabbing;
 }
 
-.card {
+.stage:focus-visible {
+  outline: 1px solid #f6f4ef4d;
+  outline-offset: 12px;
+}
+
+/* The one moving part. */
+.ring {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: clamp(124px, 12.5vw, 196px);
-  height: clamp(158px, 16vw, 250px);
+  inset: 0;
   margin: 0;
+  padding: 0;
+  list-style: none;
   transform-style: preserve-3d;
   will-change: transform;
 }
 
-/* Only the transform is animated, so a drag can drive it frame by frame. */
-.card[data-settled="true"] {
-  transition: transform 620ms cubic-bezier(0.22, 1, 0.36, 1), opacity 420ms ease;
+/* Settling only: through a drag the ring is already following the finger, and
+   a transition there would drag a rubber band behind it. */
+.ring[data-settled="true"] {
+  transition: transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Every card is the same size in the markup and bolted to the ring at a fixed
+   angle. Its place on the ring is the only thing that decides how big it
+   reads, so nothing here is ever recalculated as the wall turns. */
+.card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: clamp(150px, 21vw, 410px);
+  aspect-ratio: 4 / 5;
+  margin: 0;
+  backface-visibility: hidden;
 }
 
 .cardButton {
@@ -89,7 +108,7 @@
   height: 100%;
   padding: 0;
   border: 0;
-  border-radius: 3px;
+  border-radius: 12px;
   overflow: hidden;
   position: relative;
   cursor: pointer;
@@ -132,39 +151,6 @@
   opacity: 1;
 }
 
-.cardText {
-  position: absolute;
-  inset: auto 0 0;
-  padding: 14px 14px 16px;
-  opacity: 0;
-  transition: opacity 420ms ease;
-}
-
-.card[data-active="true"] .cardText {
-  opacity: 1;
-}
-
-.cardIndex {
-  display: block;
-  margin-bottom: 7px;
-  font: 9px var(--font-mono);
-  letter-spacing: 0.2em;
-  color: #f6f4efb3;
-}
-
-.cardText h3 {
-  margin: 0;
-  font: 800 clamp(15px, 1.25vw, 19px)/1.05 var(--font-brand);
-  letter-spacing: -0.02em;
-}
-
-.cardText p {
-  margin: 6px 0 0;
-  font: 8px/1.6 var(--font-mono);
-  letter-spacing: 0.08em;
-  color: #f6f4efb3;
-}
-
 /* The open cue only belongs on the card you can actually open. */
 .cardOpen {
   position: absolute;
@@ -187,6 +173,38 @@
 
 .card[data-active="true"] .cardOpen {
   opacity: 1;
+}
+
+/* The active reel is named here rather than on the card: at the far wall the
+   card is half size, which would take the type down to about eight pixels. */
+.caption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  margin: clamp(22px, 2.6vw, 40px) 0 0;
+  text-align: center;
+  animation: captionIn 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.caption b {
+  font: 800 clamp(22px, 2.2vw, 34px)/1 var(--font-brand);
+  letter-spacing: -0.03em;
+}
+
+.caption span {
+  font: 9px var(--font-mono);
+  letter-spacing: 0.22em;
+  color: #f6f4ef73;
+}
+
+@keyframes captionIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caption { animation: none; }
 }
 
 /* Controls: the same line carries the hint, the pager and the way out. */
@@ -404,7 +422,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .card[data-settled="true"] {
+  .ring[data-settled="true"] {
     transition: none;
   }
 
