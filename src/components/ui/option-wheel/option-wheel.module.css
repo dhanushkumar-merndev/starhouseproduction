@@ -1,0 +1,46 @@
+.wheel {
+  --ow-text-color: #a6a6a6;
+  --ow-active-color: #ffffff;
+  --ow-font-size: 3rem;
+  --ow-inset: 80px;
+
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  outline: none;
+}
+
+.dragging {
+  cursor: grabbing;
+}
+
+/* Each option is absolutely centered, then offset along the curve by the
+   rAF loop through transform/opacity/filter, so everything stays in step. */
+.item {
+  position: absolute;
+  top: 50%;
+  left: var(--ow-inset);
+  white-space: nowrap;
+  font-size: var(--ow-font-size);
+  line-height: 1;
+  font-weight: 200;
+  transform-origin: left center;
+  cursor: pointer;
+  will-change: transform, opacity, filter;
+  /* --ow-p goes 0 -> 1 as an option approaches the middle of the wheel */
+  color: color-mix(in srgb, var(--ow-active-color) calc(var(--ow-p, 0) * 100%), var(--ow-text-color));
+}
+
+.right .item {
+  left: auto;
+  right: var(--ow-inset);
+  transform-origin: right center;
+}
+
+.selected {
+  font-weight: 500;
+}

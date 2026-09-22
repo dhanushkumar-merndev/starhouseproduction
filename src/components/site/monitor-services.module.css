@@ -1,0 +1,259 @@
+.board {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: clip;
+  background: #101112;
+  color: #f4f3f0;
+  color-scheme: dark;
+}
+
+.content {
+  width: min(100%, 1440px);
+  min-height: 100%;
+  margin-inline: auto;
+  padding: 112px 7% 52px;
+  transform: translateY(var(--service-content-y, 0px));
+}
+
+.header {
+  margin-bottom: 40px;
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin: 0 0 22px;
+  color: #b1b3b4;
+  font: 10px/1.5 var(--font-mono);
+  letter-spacing: 0.13em;
+}
+
+.eyebrow > span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent, #f20d21);
+}
+
+.headingRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+.headingRow h2 {
+  margin: 0;
+  font-size: clamp(34px, 4.3vw, 64px);
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+}
+
+.headingRow > p {
+  margin: 0 0 3px;
+  color: #919596;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+}
+
+.imageFrame {
+  position: relative;
+  flex: 1;
+  min-height: 120px;
+  overflow: hidden;
+  background: #242628;
+  border-radius: 3px;
+}
+
+.image {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  transition: transform 650ms cubic-bezier(0.2, 0.65, 0.3, 1), filter 500ms ease;
+  filter: saturate(0.72);
+}
+
+.number {
+  position: absolute;
+  top: 13px;
+  left: 13px;
+  display: grid;
+  width: 25px;
+  height: 25px;
+  place-items: center;
+  border-radius: 50%;
+  background: #101112b8;
+  color: #eeeeec;
+  font: 9px/1 var(--font-mono);
+}
+
+.cardCaption {
+  flex: 0 0 96px;
+  padding-top: 18px;
+}
+
+.cardTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.cardTitle h3 {
+  margin: 0;
+  font-size: clamp(17px, 1.5vw, 22px);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 1.3;
+}
+
+.cardTitle > span {
+  color: #808487;
+  font-size: 18px;
+  transition: color 200ms, transform 200ms;
+}
+
+.cardCaption p {
+  max-width: 30ch;
+  margin: 7px 0 0;
+  color: #989c9e;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--accent, #f20d21);
+  outline-offset: 6px;
+}
+
+.card:focus-visible .cardTitle > span {
+  color: var(--accent, #f20d21);
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  margin-top: 48px;
+  padding-top: 28px;
+  border-top: 1px solid #ffffff24;
+}
+
+.footer a {
+  display: inline-flex;
+  align-items: center;
+  gap: 25px;
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.footer a:last-child {
+  color: #a0a4a6;
+}
+
+.footer a > span {
+  color: var(--accent, #f20d21);
+  font-size: 18px;
+}
+
+@media (hover: hover) {
+  .card:hover .image {
+    transform: scale(1.035);
+    filter: saturate(1);
+  }
+
+  .card:hover .cardTitle > span {
+    color: var(--accent, #f20d21);
+    transform: translate(2px, -2px);
+  }
+
+  .footer a:hover {
+    color: white;
+  }
+}
+
+@media (max-width: 899px) {
+  .content {
+    padding: 100px 6% 40px;
+  }
+
+  .header {
+    margin-bottom: 32px;
+  }
+
+  .cardCaption {
+    flex-basis: 86px;
+    padding-top: 14px;
+  }
+}
+
+@media (max-width: 599px) {
+  .content {
+    padding: 96px 22px 34px;
+  }
+
+  .eyebrow {
+    margin-bottom: 18px;
+    font-size: 9px;
+  }
+
+  .headingRow h2 {
+    font-size: clamp(32px, 8vw, 42px);
+  }
+
+  .headingRow > p {
+    display: none;
+  }
+
+  .cardTitle {
+    gap: 4px;
+  }
+
+  .cardTitle h3 {
+    font-size: 15px;
+  }
+
+  .cardTitle > span {
+    font-size: 16px;
+  }
+
+  .cardCaption p {
+    font-size: 10px;
+    line-height: 1.5;
+  }
+
+  .number {
+    top: 10px;
+    left: 10px;
+    width: 22px;
+    height: 22px;
+    font-size: 8px;
+  }
+
+  .footer {
+    align-items: flex-start;
+    flex-direction: column;
+    margin-top: 30px;
+    padding-top: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .image,
+  .cardTitle > span {
+    transition: none;
+  }
+}

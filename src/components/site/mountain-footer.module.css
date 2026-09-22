@@ -1,0 +1,348 @@
+.footer {
+  display: contents;
+}
+
+.landscape {
+  position: absolute;
+  inset: -1%;
+  background: #eae8e0 url("/images/footer-grounded-crew.webp") center bottom / cover no-repeat;
+  transform-origin: center bottom;
+  animation: landscapePan 24s ease-in-out infinite alternate paused;
+  pointer-events: none;
+}
+
+.artwork {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  opacity: var(--footer-reveal, 0);
+  pointer-events: none;
+  overflow: clip;
+}
+
+.mist {
+  position: absolute;
+  width: 85%;
+  left: -30%;
+  height: 24%;
+  background: url("/images/footer-fog.webp") center / 100% 100% no-repeat;
+  filter: blur(10px);
+  animation: mistDrift 32s ease-in-out infinite alternate paused;
+}
+
+.mistBehind {
+  bottom: 34%;
+  opacity: .2;
+}
+
+.mistInFront {
+  z-index: 2;
+  bottom: 43%;
+  left: 45%;
+  height: 16%;
+  opacity: .12;
+  animation-duration: 43s;
+  animation-delay: -16s;
+  animation-direction: alternate-reverse;
+}
+
+:global(.camera-studio[data-chapter="footer"]) .landscape,
+:global(.camera-studio[data-chapter="footer"]) .mist {
+  animation-play-state: running;
+}
+
+@keyframes landscapePan {
+  from { transform: translateX(-.15%) scale(1); }
+  to { transform: translateX(.15%) scale(1.008); }
+}
+
+@keyframes mistDrift {
+  from { transform: translate(-7%, 5px) scaleY(.94); }
+  to { transform: translate(7%, -7px) scaleY(1.05); }
+}
+
+.foreground {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(108px, 15svh, 160px) 7% max(25px, env(safe-area-inset-bottom));
+  opacity: var(--footer-reveal, 0);
+  pointer-events: none;
+}
+
+.invitation {
+  align-self: flex-start;
+  color: #242621;
+  transform: translateY(calc((1 - var(--footer-reveal, 0)) * 20px));
+}
+
+.eyebrow {
+  margin: 0 0 21px;
+  font: 9px/1.5 var(--font-mono);
+  letter-spacing: .16em;
+}
+
+.heading {
+  margin: 0;
+  font: 700 clamp(36px, 4.4vw, 64px)/1.04 var(--font-brand);
+  letter-spacing: -.045em;
+}
+
+.projectLink {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 30px;
+  margin-top: 18px;
+  border-bottom: 1px solid currentColor;
+  font: 700 10px/1.5 var(--font-mono);
+  letter-spacing: .07em;
+  text-decoration: none;
+  pointer-events: auto;
+}
+
+.projectLink span {
+  font: 22px/1 var(--font-brand);
+  transition: transform 180ms ease;
+}
+
+.projectLink:hover span {
+  transform: translate(2px, -2px);
+}
+
+.details {
+  color: #f7f5ed;
+}
+
+.mainRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 24px;
+}
+
+.brand {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 17px;
+  text-decoration: none;
+  pointer-events: auto;
+}
+
+.monogram {
+  font: 800 38px/1 var(--font-brand);
+  letter-spacing: -.065em;
+}
+
+.brandName {
+  display: grid;
+  gap: 6px;
+  font: 700 9px/1.4 var(--font-mono);
+  letter-spacing: .04em;
+}
+
+.brandName > span {
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: .09em;
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+  gap: clamp(18px, 2.5vw, 40px);
+}
+
+.navigation a {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  font: 700 10px/1.4 var(--font-mono);
+  text-decoration: none;
+  text-underline-offset: 6px;
+  pointer-events: auto;
+}
+
+.navigation a:hover {
+  text-decoration: underline;
+}
+
+.bottomRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  border-top: 1px solid #f7f5ed52;
+  padding-top: 20px;
+  font: 8px/1.7 var(--font-mono);
+  letter-spacing: .06em;
+}
+
+.details a:focus-visible {
+  outline-color: #f7f5ed;
+}
+
+@media (max-width: 700px) {
+  .mistBehind { bottom: 43%; height: 15%; }
+  .mistInFront { bottom: 47%; height: 12%; }
+  .landscape {
+    background-image: url("/images/footer-grounded-crew-mobile.webp");
+    background-position: center bottom;
+  }
+
+  .foreground {
+    padding: 112px 28px max(20px, env(safe-area-inset-bottom));
+  }
+
+  .eyebrow {
+    margin-bottom: 15px;
+    font-size: 8px;
+    letter-spacing: .11em;
+  }
+
+  .heading {
+    font-size: clamp(29px, 7.5vw, 46px);
+  }
+
+  .projectLink {
+    margin-top: 13px;
+    font-size: 9px;
+    gap: 25px;
+  }
+
+  .mainRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding-bottom: 12px;
+  }
+
+  .brand {
+    gap: 13px;
+  }
+
+  .monogram {
+    font-size: 31px;
+  }
+
+  .brandName {
+    gap: 4px;
+    font-size: 8px;
+  }
+
+  .brandName > span {
+    font-size: 7px;
+  }
+
+  .navigation {
+    width: 100%;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .navigation a {
+    justify-content: flex-start;
+    font-size: 9px;
+  }
+
+  .bottomRow {
+    padding-top: 14px;
+    font-size: 7px;
+  }
+
+  .signature {
+    display: none;
+  }
+}
+
+@media (max-height: 620px) and (min-aspect-ratio: 4/3) {
+  .landscape { background-image: url("/images/footer-grounded-crew.webp"); }
+  .foreground {
+    padding-top: 92px;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
+  .eyebrow {
+    margin-bottom: 12px;
+    font-size: 8px;
+  }
+
+  .heading {
+    font-size: clamp(26px, 3.6vw, 36px);
+  }
+
+  .projectLink {
+    margin-top: 8px;
+  }
+
+  .mainRow {
+    padding-bottom: 6px;
+    gap: 16px;
+  }
+
+  .brand {
+    gap: 10px;
+  }
+
+  .monogram {
+    font-size: 30px;
+  }
+
+  .navigation {
+    gap: 14px;
+  }
+
+  .bottomRow {
+    padding-top: 8px;
+    font-size: 7px;
+  }
+}
+
+@media (max-height: 640px) and (max-aspect-ratio: 20/17) {
+  .foreground {
+    padding: 94px 22px max(14px, env(safe-area-inset-bottom));
+  }
+
+  .eyebrow {
+    margin-bottom: 10px;
+    font-size: 7px;
+  }
+
+  .heading {
+    font-size: clamp(24px, 7.2vw, 32px);
+  }
+
+  .projectLink {
+    margin-top: 8px;
+  }
+
+  .mainRow {
+    gap: 4px;
+    padding-bottom: 5px;
+  }
+
+  .brand {
+    gap: 10px;
+  }
+
+  .monogram {
+    font-size: 28px;
+  }
+
+  .bottomRow {
+    padding-top: 9px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .invitation {
+    transform: none;
+  }
+  .landscape,.mist { animation: none; }
+}

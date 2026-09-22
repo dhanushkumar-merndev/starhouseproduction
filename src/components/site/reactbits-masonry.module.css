@@ -1,0 +1,30 @@
+/* Adapted from React Bits Masonry. See reactbits-LICENSE.md. */
+.list {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+.itemWrapper {
+  position: relative;
+  min-width: 0;
+}
+
+.list[data-masonry-ready="true"] {
+  display: block;
+}
+
+.list[data-masonry-ready="true"] .itemWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+@media (min-width: 900px) {
+  .list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+}
