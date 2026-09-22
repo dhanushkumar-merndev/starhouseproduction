@@ -10,10 +10,13 @@
 
 /* Centred over the wall, the way the reference reads: copy first, then the
    arc of frames running out past both edges of the frame. */
+/* Its own padding rather than --gutter: that one is calc'd against the width
+   of whatever it is used on, so on a block already capped at ~1000px it took
+   another 250px off each side and wrapped the copy into a narrow ribbon. */
 .head {
-  max-width: 940px;
+  max-width: 1040px;
   margin: 0 auto;
-  padding: 0 var(--gutter);
+  padding: 0 clamp(20px, 4vw, 48px);
   text-align: center;
 }
 
@@ -32,6 +35,41 @@
   margin: 14px 0 0;
   font: 13px/1.7 var(--font-brand);
   color: #f6f4ef8c;
+}
+
+/* The studio's own words, set narrower than the heading so the lines break
+   where the eye wants them to rather than where the stage ends. */
+.intro {
+  max-width: 780px;
+  margin: clamp(22px, 2.4vw, 34px) auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 1.4vw, 20px);
+}
+
+.intro p {
+  margin: 0;
+  font: clamp(14px, 1.05vw, 16px)/1.75 var(--font-brand);
+  letter-spacing: -0.005em;
+  color: #f6f4efa6;
+}
+
+.introLine {
+  color: #f6f4ef;
+}
+
+.introLine em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+/* The one line that is an instruction rather than a statement. */
+.hintLine {
+  margin: clamp(20px, 2.2vw, 32px) 0 0;
+  font: 10px var(--font-mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #f6f4ef73;
 }
 
 .eyebrow {

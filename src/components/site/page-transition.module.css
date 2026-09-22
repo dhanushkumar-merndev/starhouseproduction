@@ -13,9 +13,19 @@
   height: 100%;
 }
 
+.opening {}
+.closing {}
+
 .blades {
   transform-box: view-box;
   transform-origin: 50px 50px;
+}
+.idle {
+  opacity: 0;
+  visibility: hidden;
+}
+.idle .blades {
+  transform: scale(4.2);
 }
 .opening .blades {
   animation: apertureOpen 900ms cubic-bezier(0.62, 0, 0.2, 1) forwards;
@@ -85,6 +95,7 @@
 
 .shutterFade {
   pointer-events: none;
+  opacity: 0;
 }
 .opening .shutterFade {
   animation: fadeOut 300ms ease-out forwards;

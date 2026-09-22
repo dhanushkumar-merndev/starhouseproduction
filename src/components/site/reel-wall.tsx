@@ -29,8 +29,13 @@ const PERSPECTIVE = 500;
 const RADIUS_RATIO = 0.5;
 /** Only the far half is drawn. Past this the ring has come round behind you. */
 const VISIBLE_ARC = 100;
-/** Drag feel: about 190px of travel to bring the next card round to the front. */
-const DEGREES_PER_PX = 0.16;
+/**
+ * Drag feel: about 340px of travel brings the next card round to the front.
+ * Tracking the pointer one-to-one at the FRONT of the ring is too fast to
+ * follow, because a card accelerates as it swings out toward the camera — the
+ * edges of the wall move several times faster than the middle does.
+ */
+const DEGREES_PER_PX = 0.088;
 /** The wall turns first and opens second, so the card you pressed is facing you. */
 const TURN_MS = 560;
 
@@ -121,9 +126,9 @@ export default function ReelWall() {
       if (Math.abs(delta) < 2) return;
       event.preventDefault();
       const now = performance.now();
-      if (now - last < 420) return;
+      if (now - last < 560) return;
       amount += delta;
-      if (Math.abs(amount) > 34) {
+      if (Math.abs(amount) > 60) {
         step(amount > 0 ? 1 : -1);
         last = now;
         amount = 0;
@@ -221,7 +226,18 @@ export default function ReelWall() {
       <div className={styles.head}>
         <p className={styles.eyebrow}><b />THE REEL WALL</p>
         <h2 id="reel-wall-heading">Every frame<br />we <em>stand behind.</em></h2>
-        <p>Turn the wall, then open a reel to read what went into it.</p>
+        <div className={styles.intro}>
+          <p>
+            Star Production House is a film studio working out of India — commercials, brand
+            films and short-form work for people who would rather be remembered than seen.
+          </p>
+          <p>
+            Fifty projects and twenty brands in, the job has not changed: find the true thing
+            in the brief, and shoot that.
+          </p>
+          <p className={styles.introLine}>We call them <em>films that stay.</em></p>
+        </div>
+        <p className={styles.hintLine}>Turn the wall, then open a reel to read what went into it.</p>
       </div>
 
       <div

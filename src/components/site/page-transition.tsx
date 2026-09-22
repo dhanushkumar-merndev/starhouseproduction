@@ -84,10 +84,9 @@ export default function PageTransition() {
     return () => document.removeEventListener('click', handleGlobalClick, { capture: true });
   }, [router]);
 
-  if (phase === 'idle') return null;
   const maskId = "iris-hole";
   return (
-    <div key={phase === 'closing' ? 'closing' : pathname} className={`${styles.iris} ${phase === 'closing' ? styles.closing : styles.opening}`} aria-hidden="true">
+    <div className={`${styles.iris} ${styles[phase]}`} aria-hidden="true">
       <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
         <defs>
           <mask id={maskId}>
