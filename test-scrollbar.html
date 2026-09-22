@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  html {
+    scrollbar-gutter: stable;
+    overflow-x: hidden;
+  }
+  body {
+    margin: 0;
+    width: 100vw;
+    background: white;
+  }
+  .dark {
+    height: 100vh;
+    background: #101112;
+    color: white;
+  }
+  .light {
+    height: 100vh;
+    background: white;
+  }
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #111212;
+    border-radius: 10px;
+  }
+</style>
+</head>
+<body>
+  <div class="light">Light</div>
+  <div class="dark">Dark</div>
+  <div class="light">Light</div>
+</body>
+</html>

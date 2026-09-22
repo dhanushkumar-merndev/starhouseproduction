@@ -4,17 +4,27 @@ const ease = (value: number, start: number, end: number) => {
   const t = clamp((value - start) / (end - start));
   return t * t * (3 - 2 * t);
 };
+/**
+ * Where the projected screen finishes growing and the services content starts
+ * scrolling. Shared, because the keyboard-focus handler has to map a browse
+ * offset back onto exactly this window.
+ */
+export const SERVICES_BROWSE = { start: 0.35, span: 0.22 };
+
 export function storyTimeline(value: number) {
   const p = clamp(value);
   return {
     travel: ease(p, 0, 0.18),
-    approach: ease(p, 0.21, 0.29),
-    enter: ease(p, 0.29, 0.4),
-    browse: clamp((p - 0.4) / 0.2),
+    approach: ease(p, 0.21, 0.28),
+    // The screen reaches full-bleed here. Kept short on purpose: a long climb
+    // leaves the page in a half-grown state, with a white header over what is
+    // already mostly a dark screen.
+    enter: ease(p, 0.28, SERVICES_BROWSE.start),
+    browse: clamp((p - SERVICES_BROWSE.start) / SERVICES_BROWSE.span),
     exit: ease(p, 0.61, 0.73),
     explode: ease(p, 0.73, 0.8),
     footer: ease(p, 0.87, 0.97),
-    servicesActive: p >= 0.4 && p <= 0.61,
+    servicesActive: p >= SERVICES_BROWSE.start && p <= 0.61,
   };
 }
 

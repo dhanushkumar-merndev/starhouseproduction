@@ -1,0 +1,20 @@
+.hero-filmstrip-2 { position: absolute; right: -5%; bottom: -10%; width: 22%; height: 50%; transform: rotate(-30deg); background: url('/images/film-crew.webp') center / cover, #17181a; box-shadow: inset 0 0 0 14px #17181a; opacity: .7; }
+.hero-filmstrip-2::before,.hero-filmstrip-2::after { content: ""; position: absolute; top: 0; bottom: 0; width: 14px; background: repeating-linear-gradient(#17181a 0 9px, #f3f2ee 9px 17px); }
+.hero-filmstrip-2::before { left: 0; }
+.hero-filmstrip-2::after { right: 0; }
+
+@keyframes tape-roll {
+  from { background-position: 0 0; }
+  to { background-position: 0 17px; }
+}
+.hero-filmstrip::before, .hero-filmstrip::after,
+.hero-filmstrip-2::before, .hero-filmstrip-2::after {
+  animation: tape-roll 0.8s linear infinite;
+}
+
+@media (max-width: 1024px) {
+  .hero-filmstrip-2 { display: none; }
+}
+@media (min-width: 1025px) {
+  .hero-filmstrip-2 { right: -5%; bottom: -15%; width: 13%; height: 36%; transform: rotate(-25deg); }
+}

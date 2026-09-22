@@ -1,0 +1,416 @@
+/* A curved wall of reels: the cards stand on an arc, the middle one faces you,
+   and pressing one turns it to the front before it opens. */
+.wall {
+  position: relative;
+  padding: clamp(60px, 6vw, 104px) 0 clamp(40px, 4vw, 68px);
+  background: #0b0c0b;
+  color: #f6f4ef;
+  overflow: hidden;
+}
+
+/* Centred over the wall, the way the reference reads: copy first, then the
+   arc of frames running out past both edges of the frame. */
+.head {
+  max-width: 940px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  text-align: center;
+}
+
+.head h2 {
+  margin: 0;
+  font: 800 clamp(34px, 4.4vw, 68px)/0.95 var(--font-brand);
+  letter-spacing: -0.03em;
+}
+
+.head em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.head p {
+  margin: 14px 0 0;
+  font: 13px/1.7 var(--font-brand);
+  color: #f6f4ef8c;
+}
+
+.eyebrow {
+  margin: 0 0 14px;
+  font: 10px/1.7 var(--font-mono);
+  letter-spacing: 0.2em;
+  color: #f6f4ef8c;
+}
+
+.eyebrow b {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 11px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* The stage carries the perspective; the cards are laid out from its middle. */
+.stage {
+  position: relative;
+  height: clamp(300px, 31vw, 440px);
+  margin-top: clamp(14px, 1.6vw, 26px);
+  perspective: 1400px;
+  perspective-origin: 50% 50%;
+  touch-action: pan-y;
+  cursor: grab;
+  list-style: none;
+  padding: 0;
+}
+
+.stage[data-dragging="true"] {
+  cursor: grabbing;
+}
+
+.card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: clamp(124px, 12.5vw, 196px);
+  height: clamp(158px, 16vw, 250px);
+  margin: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Only the transform is animated, so a drag can drive it frame by frame. */
+.card[data-settled="true"] {
+  transition: transform 620ms cubic-bezier(0.22, 1, 0.36, 1), opacity 420ms ease;
+}
+
+.cardButton {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  background: #17181a;
+  box-shadow: 0 30px 80px -40px #000000d9;
+  text-align: left;
+  color: #f6f4ef;
+  font: inherit;
+}
+
+.cardButton:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.cardPhoto {
+  position: absolute;
+  inset: 0;
+  background-image: url('/images/visual-directions.webp');
+  background-repeat: no-repeat;
+  background-size: 400% auto;
+  background-position: center;
+  transform: scale(1.02);
+  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cardButton:hover .cardPhoto {
+  transform: scale(1.06);
+}
+
+.cardShade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, #0b0c0be6 4%, #0b0c0b40 46%, #0b0c0b0d 100%);
+  opacity: 0;
+  transition: opacity 420ms ease;
+}
+
+.card[data-active="true"] .cardShade {
+  opacity: 1;
+}
+
+.cardText {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 14px 14px 16px;
+  opacity: 0;
+  transition: opacity 420ms ease;
+}
+
+.card[data-active="true"] .cardText {
+  opacity: 1;
+}
+
+.cardIndex {
+  display: block;
+  margin-bottom: 7px;
+  font: 9px var(--font-mono);
+  letter-spacing: 0.2em;
+  color: #f6f4efb3;
+}
+
+.cardText h3 {
+  margin: 0;
+  font: 800 clamp(15px, 1.25vw, 19px)/1.05 var(--font-brand);
+  letter-spacing: -0.02em;
+}
+
+.cardText p {
+  margin: 6px 0 0;
+  font: 8px/1.6 var(--font-mono);
+  letter-spacing: 0.08em;
+  color: #f6f4efb3;
+}
+
+/* The open cue only belongs on the card you can actually open. */
+.cardOpen {
+  position: absolute;
+  top: 11px;
+  right: 11px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font: 14px/1 Arial, sans-serif;
+  color: #f6f4ef;
+  background: #f6f4ef1f;
+  border: 1px solid #f6f4ef4d;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  transition: opacity 320ms ease;
+}
+
+.card[data-active="true"] .cardOpen {
+  opacity: 1;
+}
+
+/* Controls: the same line carries the hint, the pager and the way out. */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-top: clamp(24px, 2.8vw, 44px);
+  padding: 0 var(--gutter);
+  font: 10px var(--font-mono);
+  letter-spacing: 0.18em;
+  color: #f6f4ef8c;
+}
+
+.pager {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.pager button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid #f6f4ef38;
+  background: transparent;
+  color: #f6f4ef;
+  font: 15px/1 Arial, sans-serif;
+  cursor: pointer;
+  transition: background 220ms ease, border-color 220ms ease, color 220ms ease;
+}
+
+.pager button:hover {
+  color: #0b0c0b;
+  background: #f6f4ef;
+  border-color: #f6f4ef;
+}
+
+.count {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #f6f4ef;
+  font-weight: 700;
+}
+
+.count i {
+  display: block;
+  width: clamp(40px, 6vw, 96px);
+  height: 1px;
+  background: #f6f4ef3d;
+}
+
+.count b {
+  font-weight: 400;
+  color: #f6f4ef73;
+}
+
+.hint {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* The detail: it grows out of the card that was pressed. */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: clamp(16px, 3vw, 46px);
+  background: #0b0c0bbf;
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+
+.panel {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  width: min(1080px, 100%);
+  max-height: min(660px, 88vh);
+  overflow: hidden;
+  border-radius: 5px;
+  background: var(--paper);
+  color: var(--ink);
+  transform-origin: center center;
+  box-shadow: 0 40px 120px -40px #000000a6;
+}
+
+.panelPhoto {
+  background-image: url('/images/visual-directions.webp');
+  background-repeat: no-repeat;
+  background-size: 400% auto;
+  min-height: 300px;
+}
+
+.panelBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: clamp(26px, 3vw, 48px);
+  overflow-y: auto;
+}
+
+.panelBody h3 {
+  margin: 0;
+  white-space: pre-line;
+  font: 800 clamp(28px, 3vw, 46px)/0.98 var(--font-brand);
+  letter-spacing: -0.03em;
+}
+
+.panelBody h3 em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.panelKicker {
+  margin: 0;
+  font: 10px var(--font-mono);
+  letter-spacing: 0.2em;
+  color: #83867c;
+}
+
+.panelBody > p {
+  margin: 0;
+  font: 14px/1.75 var(--font-brand);
+  color: #4d4f49;
+}
+
+.panelFacts {
+  display: grid;
+  gap: 10px;
+  margin: 4px 0 0;
+  padding: 18px 0 0;
+  border-top: 1px solid #1112121f;
+  list-style: none;
+}
+
+.panelFacts li {
+  display: flex;
+  gap: 12px;
+  font: 11px/1.6 var(--font-mono);
+  letter-spacing: 0.07em;
+  color: #5b5d56;
+}
+
+.panelFacts li::before {
+  content: "";
+  flex: none;
+  width: 5px;
+  height: 5px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.panelLink {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px 20px;
+  text-decoration: none;
+  font: bold 11px var(--font-mono);
+  letter-spacing: 0.12em;
+  color: #f6f4ef;
+  background: var(--ink);
+  border-radius: 3px;
+  transition: background 220ms ease;
+}
+
+.panelLink:hover {
+  background: var(--accent);
+}
+
+.close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid #1112122e;
+  background: #ffffffe0;
+  color: var(--ink);
+  font: 17px/1 Arial, sans-serif;
+  cursor: pointer;
+  transition: background 200ms ease, color 200ms ease;
+}
+
+.close:hover {
+  color: #f6f4ef;
+  background: var(--ink);
+}
+
+@media (max-width: 860px) {
+  .panel {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 200px) minmax(0, 1fr);
+  }
+
+  .panelPhoto {
+    min-height: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card[data-settled="true"] {
+    transition: none;
+  }
+
+  .cardPhoto,
+  .cardButton:hover .cardPhoto {
+    transition: none;
+    transform: none;
+  }
+}

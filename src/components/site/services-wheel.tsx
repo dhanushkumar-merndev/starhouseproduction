@@ -8,6 +8,14 @@ import styles from "./studio-sections.module.css";
 /** Gap enforced between wheel steps, so a fast flick still advances one at a time. */
 const STEP_INTERVAL = 140;
 
+const imagery = [
+  { src: "/images/film-crew.webp", position: "58% 50%", size: "cover" },
+  { src: "/images/visual-directions.webp", position: "33.333% 60%", size: "400% auto" },
+  { src: "/images/visual-directions.webp", position: "0% 58%", size: "400% auto" },
+  { src: "/images/visual-directions.webp", position: "66.667% 55%", size: "400% auto" },
+  { src: "/images/visual-directions.webp", position: "100% 45%", size: "400% auto" },
+];
+
 export default function ServicesWheel() {
   const [selected, setSelected] = useState(0);
   const [compact, setCompact] = useState(false);
@@ -63,6 +71,19 @@ export default function ServicesWheel() {
 
   return (
     <div className={styles.serviceWheelLayout} ref={block}>
+      {imagery.map((photo, index) => (
+        <div 
+          key={index} 
+          className={styles.serviceImage} 
+          style={{ 
+            backgroundImage: `url('${photo.src}')`, 
+            backgroundPosition: photo.position, 
+            backgroundSize: photo.size,
+            opacity: selected === index ? 1 : 0
+          }} 
+          aria-hidden="true" 
+        />
+      ))}
       <div className={styles.serviceWheel}>
         <OptionWheel
           ref={wheel}
@@ -77,8 +98,8 @@ export default function ServicesWheel() {
           spacing={1.35}
           curve={1}
           tilt={6}
-          blur={1.2}
-          fade={0.22}
+          blur={0}
+          fade={0.4}
           smoothing={200}
           inset={compact ? 26 : 58}
           loop={false}
@@ -90,7 +111,6 @@ export default function ServicesWheel() {
       <div className={styles.serviceDetail} aria-live="polite">
         {services.map(([title, tagline, detail], index) => (
           <article key={title} hidden={index !== selected}>
-            <p className={styles.eyebrow}>0{index + 1} <span>/</span> {title.toUpperCase()}</p>
             <h2>{tagline}</h2>
             <p>{detail}</p>
             <a className="text-link" href="#enquiry">START A PROJECT <span aria-hidden="true">↗</span></a>

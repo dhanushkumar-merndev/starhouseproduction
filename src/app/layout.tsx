@@ -4,6 +4,7 @@ import PageTransition from "@/components/site/page-transition";
 import "./globals.css";
 
 const interFont = localFont({ src: "../../public/fonts/inter-latin-variable.woff2", variable: "--font-inter", display: "swap", weight: "400 900" });
+const scriptFont = localFont({ src: "../../public/fonts/caveat-latin-variable.woff2", variable: "--font-script", display: "swap", weight: "400 700" });
 
 export const metadata: Metadata = {
   title: "Star Production House | Commercials & 4K Cinema",
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={interFont.variable}>
+    <html lang="en" className={`${interFont.variable} ${scriptFont.variable}`}>
       <body>{children}<PageTransition /></body>
     </html>
   );

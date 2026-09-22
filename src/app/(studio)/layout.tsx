@@ -7,7 +7,7 @@ import SmoothScroll from "@/components/site/smooth-scroll";
 import styles from "@/components/site/studio-sections.module.css";
 
 /** Routes that render on black; the shell redefines the palette for them. */
-const DARK_ROUTES = ["/services"];
+const DARK_ROUTES = ["/services", "/projects"];
 
 export default function StudioLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

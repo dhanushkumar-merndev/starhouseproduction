@@ -6,10 +6,11 @@ import { createCameraBody } from "./camera-body";
 import { createCameraLens } from "./camera-lens";
 import { createLensBrandTexture } from "./lens-brand";
 import { configureModelQuality } from "./model-utils";
-import { storyTimeline } from "./scroll-story";
+import { SERVICES_BROWSE, storyTimeline } from "./scroll-story";
 import { monitorRegion, projectScreenPortal } from "./screen-portal";
 
-export type SceneState = { phase: "intro" | "reveal" | "ready"; progress: number; surface?: "hero" | "monitor" | "parts" | "footer" };
+export type SceneChapter = "stories" | "craft" | "monitor" | "parts" | "footer";
+export type SceneState = { phase: "intro" | "reveal" | "ready"; progress: number; surface?: "hero" | "monitor" | "parts" | "footer"; chapter?: SceneChapter };
 
 // Batch static parts by material instead of issuing one draw call per bolt.
 function batchStaticMeshes(model: THREE.Group) {
@@ -288,14 +289,19 @@ export async function mountCameraScene(
     shadowPose = nextShadowPose;
     opticalMaterial.uniforms.brandOpacity.value = (1 - THREE.MathUtils.smoothstep(progress, 0.04, 0.32)) * THREE.MathUtils.smoothstep(storyTime, 0.2, 1.8);
 
-    const surface = scrollProgress >= 0.94 ? "footer" : scrollProgress >= 0.72 ? "parts" : scrollProgress >= 0.29 && scrollProgress <= 0.66 ? "monitor" : "hero";
-    studioElement?.setAttribute("data-chapter", surface === "hero" ? scrollProgress > 0.09 ? "craft" : "stories" : surface);
+    // No gap between the ranges: a hole here dropped the chapter back to the
+    // hero mid-journey, which reset the index rail from 02 to 01 and back.
+    const surface = scrollProgress >= 0.94 ? "footer" : scrollProgress >= 0.72 ? "parts" : scrollProgress >= 0.29 ? "monitor" : "hero";
+    // The rail counts the story's five beats, so the hero's two halves are
+    // told apart here rather than being flattened into one "hero".
+    const chapter: SceneChapter = surface === "hero" ? (scrollProgress > 0.09 ? "craft" : "stories") : surface;
+    studioElement?.setAttribute("data-chapter", chapter);
     const phase = progress === 1 ? "ready" : progress > 0.005 ? "reveal" : "intro";
     const rounded = Math.round(progress * 100);
-    const state = `${phase}:${rounded}:${surface}`;
+    const state = `${phase}:${rounded}:${chapter}`;
     if (state !== lastState) {
       lastState = state;
-      onStateChange({ phase, progress: rounded / 100, surface });
+      onStateChange({ phase, progress: rounded / 100, surface, chapter });
     }
   }
 
@@ -308,9 +314,11 @@ export async function mountCameraScene(
     const tangent = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
     const stacked = width < 900 && height > width * 0.85;
     const shortScreen = height < 500;
+    // The fractions are how much of the frame the rig is allowed to fill;
+    // pulled back a little so it leaves the hero's right-hand rail alone.
     overviewDistance = Math.max(
-      5.4 / (2 * tangent * (stacked ? 0.41 : shortScreen ? 0.69 : 0.77)),
-      6.3 / (2 * tangent * camera.aspect * (stacked ? 0.92 : 0.48)),
+      5.4 / (2 * tangent * (stacked ? 0.38 : shortScreen ? 0.62 : 0.68)),
+      6.3 / (2 * tangent * camera.aspect * (stacked ? 0.86 : 0.43)),
     );
     // Fit the entire circular rim, including a small top and bottom margin.
     introDistance = 0.04 + 1.32 / (2 * tangent * Math.min(1, camera.aspect) * 0.96);
@@ -392,7 +400,7 @@ export async function mountCameraScene(
     if (Math.abs(offset - currentOffset) < 1) return;
     // Keyboard focus advances the same page timeline; it must not create a
     // second, hidden scroll offset inside the projected monitor.
-    desiredScroll = scrollProgress = 0.4 + browse * 0.2;
+    desiredScroll = scrollProgress = SERVICES_BROWSE.start + browse * SERVICES_BROWSE.span;
     const trackTop = scrollTrack.getBoundingClientRect().top + window.scrollY;
     window.scrollTo({ top: trackTop + desiredScroll * (scrollTrack.offsetHeight - height), behavior: "instant" });
     updateShot();

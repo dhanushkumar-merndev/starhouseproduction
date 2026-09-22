@@ -215,11 +215,12 @@
 @media(max-width:700px) { .page { padding-top: 96px; } .page > .section { padding-top: 40px; } }
 
 /* Services: an option wheel carries the range, one service reads at a time. */
-.serviceWheelLayout { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 7%; align-items: center; }
+.serviceWheelLayout { position: relative; display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 7%; align-items: center; }
+.serviceImage { position: absolute; right: 0; top: 0; width: 60%; height: 100%; z-index: 0; transition: opacity 0.8s ease; pointer-events: none; background-repeat: no-repeat; filter: grayscale(100%) brightness(0.9) opacity(0.5); -webkit-mask-image: radial-gradient(ellipse at center, black 10%, transparent 70%); mask-image: radial-gradient(ellipse at center, black 10%, transparent 70%); }
 .serviceWheel { position: relative; height: clamp(380px,44vw,520px); }
 .serviceWheel::before { content: ""; position: absolute; left: 0; top: 50%; z-index: 1; width: 34px; height: 2px; margin-top: -1px; background: var(--accent); }
-.serviceWheelSkin > div { font-family: var(--font-brand); font-weight: 500; letter-spacing: -.03em; }
-.serviceWheelSkin > div[aria-selected="true"] { font-weight: 800; }
+.serviceWheelSkin > div { font-family: var(--font-brand); font-weight: 700; letter-spacing: -.03em; }
+.serviceWheelSkin > div[aria-selected="true"] { font-weight: 700; }
 .serviceWheelSkin:focus-visible { outline: 2px solid var(--accent); outline-offset: 8px; }
 .serviceDetail h2 { font-size: clamp(26px,2.5vw,38px); line-height: 1.1; margin: 22px 0 0; }
 .serviceDetail p:not(.eyebrow) { max-width: 420px; margin: 20px 0 0; color: #717569; font-size: 14px; line-height: 1.8; }

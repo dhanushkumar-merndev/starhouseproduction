@@ -7,15 +7,46 @@ import MonitorServices from "@/components/site/monitor-services";
 import MountainFooter from "@/components/site/mountain-footer";
 import SiteHeader from "@/components/site/site-header";
 import { setScrollLock } from "@/components/site/scroll-lock";
-import type { SceneState } from "./studio-scene";
+import type { SceneChapter, SceneState } from "./studio-scene";
 
 type SceneActions = { replay: () => void; skip: () => void };
+
+/** The three reels shown under the hero copy; frames come from the contact sheet. */
+const reels = [
+  { title: "Brand Films", frame: "0%" },
+  { title: "Commercials", frame: "33.333%" },
+  { title: "Short Films", frame: "66.667%" },
+];
+
+const social = ["Instagram", "YouTube", "Behance", "LinkedIn"];
+
+/**
+ * The four beats the index rail counts through: the hero, the shoot copy, the
+ * projected services screen, and the exploded rig. The footer keeps the last
+ * number lit rather than dropping the rail back to nothing.
+ */
+const railPosition: Record<SceneChapter, number> = { stories: 0, craft: 1, monitor: 2, parts: 3, footer: 3 };
+
+/** Counted up by the hero timeline; the markup carries the finished figure. */
+
+const stats = [
+  { value: 50, suffix: "+", label: "Projects" },
+  { value: 20, suffix: "+", label: "Brands" },
+  { value: 4, suffix: "K", label: "Visuals" },
+];
 
 /**
  * Module scope, so the intro plays once per page load: it survives client-side
  * navigation back to the homepage and only resets on a hard refresh.
  */
 let introPlayed = false;
+
+/**
+ * The hero's entrance, like the intro, belongs to the page load: coming back to
+ * the homepage from the nav re-mounts this component, and replaying the whole
+ * landing there reads as a glitch rather than an entrance.
+ */
+let heroPlayed = false;
 
 /** Never hold the page longer than this, however slowly the scene comes up. */
 const INTRO_LOCK_LIMIT = 9000;
@@ -30,6 +61,11 @@ export default function CameraScene() {
   const reducedMotion = useSyncExternalStore(subscribeToMotion, () => window.matchMedia("(prefers-reduced-motion: reduce)").matches, () => false);
   const hostRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
+  // The timeline reaches the reels, counts and social row as well as the copy,
+  // and all of those sit outside .hero-copy — so the context is scoped here.
+  const studioRef = useRef<HTMLDivElement>(null);
+  const indexRef = useRef<HTMLOListElement>(null);
+  const [monitorCovers, setMonitorCovers] = useState(false);
   const actionsRef = useRef<SceneActions | null>(null);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [view, setView] = useState<SceneState>({ phase: "intro", progress: 0 });
@@ -38,6 +74,9 @@ export default function CameraScene() {
   // view.progress is the intro's own progress, so this is true for the whole
   // run of it, including the hold before the reveal begins.
   const introRunning = status === "ready" && view.phase !== "ready" && !staticView;
+  // The rail follows the scroll story rather than the hero copy, so it keeps
+  // counting once the hero has handed over.
+  const chapterIndex = railPosition[view.chapter ?? "stories"];
 
   // Hold the page still for the length of the intro, so a scroll during it
   // cannot leave the page part-way down when it finishes.
@@ -65,8 +104,66 @@ export default function CameraScene() {
 
   // The hero lands on a GSAP timeline: each headline line rises out of its own
   // mask, with the supporting copy following just behind it.
+  // The header inverts on the monitor chapter, but only once the projected
+  // screen genuinely sits behind it — measured, because the rig's framing
+  // decides when that happens.
   useEffect(() => {
-    if (!revealed || staticView || !heroRef.current) return;
+    const portal = document.getElementById("monitor-portal");
+    if (!portal) return;
+    let frame = 0;
+    let settleUntil = 0;
+    const measure = () => {
+      frame = 0;
+      if (staticView) { setMonitorCovers(false); return; }
+      const rect = portal.getBoundingClientRect();
+      const behindHeader = rect.top <= 4 && rect.bottom >= 140 && rect.width >= window.innerWidth * 0.92;
+      // Opacity as well as visibility: past the services chapter the screen is
+      // faded out but still occupies the whole rect, which blacked the header
+      // over a white page.
+      const shown = getComputedStyle(portal);
+      setMonitorCovers(behindHeader && shown.visibility !== "hidden" && Number(shown.opacity) > 0.5);
+      // The rig keeps easing after the last scroll event, so carry on watching
+      // for a moment: otherwise the tone is decided mid-move and left there,
+      // which is exactly when you stop and look at it.
+      if (performance.now() < settleUntil) frame = requestAnimationFrame(measure);
+    };
+    const schedule = () => {
+      settleUntil = performance.now() + 1000;
+      if (!frame) frame = requestAnimationFrame(measure);
+    };
+    schedule();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule, { passive: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
+  }, [staticView]);
+
+  // Each chapter change dips the rail out and back, so the number reads as a
+  // deliberate cut rather than a silent swap.
+  useEffect(() => {
+    const list = indexRef.current;
+    // Nothing until the rig has been revealed: the tween writes an inline
+    // opacity, which would otherwise hold the rail lit over the intro.
+    if (!list || staticView || !revealed) return;
+    const fade = gsap.fromTo(list, { autoAlpha: 0.15 }, { autoAlpha: 1, duration: 0.5, ease: "power2.out" });
+    return () => { fade.kill(); gsap.set(list, { clearProps: "opacity,visibility" }); };
+  }, [chapterIndex, revealed, staticView]);
+
+  useEffect(() => {
+    if (!revealed || staticView || !studioRef.current) return;
+    // Coming back from the nav skips the intro, so the entrance doesn't replay:
+    // land the copy on its finished pose instead, or it stays on the hidden
+    // start state CSS gives it and the hero reads as an empty page.
+    if (heroPlayed) {
+      const settled = gsap.context(() => {
+        gsap.set(".hero-copy .hero-eyebrow, .hero-copy .hero-description, .hero-copy .hero-work-link", { autoAlpha: 1, y: 0 });
+      }, studioRef);
+      return () => settled.revert();
+    }
+    heroPlayed = true;
     const context = gsap.context(() => {
       // The start pose lives here rather than in CSS, so if this never runs the
       // headline is simply visible instead of stranded off-screen.
@@ -77,7 +174,33 @@ export default function CameraScene() {
         .to(".hero-line > span", { yPercent: 0, duration: 1.1, stagger: 0.09 }, 0.06)
         .to(".hero-description", { autoAlpha: 1, y: 0, duration: 0.7 }, 0.48)
         .to(".hero-work-link", { autoAlpha: 1, y: 0, duration: 0.7 }, 0.6);
-    }, heroRef);
+
+      // The furniture around the rig arrives after the headline has landed. These
+      // end on a clearProps rather than a captured "from" value: the studio light
+      // is still ramping as they start, so a from() would pin whatever opacity it
+      // read at that instant and hold the row lit through the chapters after it.
+      gsap.fromTo(".hero-reels li", { autoAlpha: 0, y: 26 }, { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.08, delay: 0.72, ease: "power3.out", clearProps: "opacity,visibility,transform" });
+      gsap.fromTo(".hero-stats > div", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.6, stagger: 0.06, delay: 0.85, ease: "power2.out", clearProps: "opacity,visibility,transform" });
+      gsap.fromTo(".hero-social a, .hero-scroll", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.7, stagger: 0.05, delay: 0.95, ease: "power2.out", clearProps: "opacity,visibility" });
+
+      // Counts run up to the figure already in the markup, so the page still
+      // reads correctly if this never plays.
+      gsap.utils.toArray<HTMLElement>(".hero-stats dt").forEach((node, index) => {
+        const target = Number(node.dataset.value ?? 0);
+        const suffix = node.dataset.suffix ?? "";
+        const counter = { value: 0 };
+        // Zeroed as the hero lands rather than when the tween starts, so the
+        // figure doesn't show for a moment and then snap back to count up.
+        node.textContent = `0${suffix}`;
+        gsap.to(counter, {
+          value: target,
+          duration: 3.5,
+          delay: 0.9 + index * 0.15,
+          ease: "power1.out",
+          onUpdate: () => { node.textContent = `${Math.round(counter.value)}${suffix}`; },
+        });
+      });
+    }, studioRef);
     return () => context.revert();
   }, [revealed, staticView]);
 
@@ -115,11 +238,17 @@ export default function CameraScene() {
 
   return (
     <>
-      <SiteHeader revealed={revealed} tone={view.surface === "monitor" ? "dark" : "light"} />
+      <SiteHeader revealed={revealed} tone={monitorCovers ? "dark" : "light"} />
       <section id="home" className="camera-scroll-track">
       <span id="inside-services" className="story-anchor" aria-hidden="true" />
-      <div className="camera-studio" data-phase={view.phase} data-revealed={revealed} data-static={staticView} aria-label="Star Production House">
+      <div ref={studioRef} className="camera-studio" data-phase={view.phase} data-revealed={revealed} data-static={staticView} aria-label="Star Production House">
         <div ref={hostRef} className={`camera-viewport${status === "ready" ? " is-ready" : ""}`} aria-hidden="true" />
+        <div className="hero-backdrop" aria-hidden="true">
+          <span className="hero-ghost">FILM</span>
+          <span className="hero-arc" />
+          <span className="hero-crosshair" />
+          <span className="hero-filmstrip" />
+        </div>
         <div className="hero-copy" ref={heroRef} inert={!revealed}>
           <p className="hero-eyebrow">STAR PRODUCTION HOUSE <span>/</span> FILMS &amp; STORIES</p>
           <h1>
@@ -129,6 +258,43 @@ export default function CameraScene() {
           <p className="hero-description">A moment becomes a frame.<br />A frame becomes a feeling.</p>
           <Link className="hero-work-link" href="/projects"><span aria-hidden="true">↗</span> EXPLORE THE WORK</Link>
         </div>
+        <ol className="hero-index" ref={indexRef} aria-hidden="true">
+          {[0, 1, 2, 3].map(index => (
+            <li key={index} data-active={index === chapterIndex}>0{index + 1}</li>
+          ))}
+        </ol>
+
+        <div className="hero-rail" inert={!revealed}>
+          <dl className="hero-stats">
+            {stats.map(({ value, suffix, label }) => (
+              <div key={label}>
+                <dt data-value={value} data-suffix={suffix}>{value}{suffix}</dt>
+                <dd>{label}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+
+        <ul className="hero-reels" inert={!revealed}>
+          {reels.map(({ title, frame }, index) => (
+            <li key={title}>
+              <Link href="/projects">
+                <span className="hero-reel-frame" style={{ backgroundPosition: `${frame} center` }} aria-hidden="true">
+                  <b>▶</b>
+                </span>
+                <span className="hero-reel-title">{title}</span>
+                <span className="hero-reel-index">0{index + 1}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        <nav className="hero-social" aria-label="Star Production House elsewhere" inert={!revealed}>
+          {social.map(name => <a key={name} href="#contact">{name}</a>)}
+        </nav>
+
+        <p className="hero-scroll" inert={!revealed}>SCROLL TO DISCOVER</p>
+
         <div className="hero-second-copy" inert>
           <p className="hero-eyebrow">01 <span>/</span> SHOOT</p>
           <h2>FIND THE<br /><em>FEELING.</em></h2>

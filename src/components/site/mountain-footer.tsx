@@ -28,7 +28,7 @@ export default function MountainFooter({ staticView = false }: { staticView?: bo
             EVERY STORY<br />
             STARTS SOMEWHERE.
           </h2>
-          <Link className={styles.projectLink} href="/services#enquiry">
+          <Link className={styles.projectLink} href="/contact">
             START A PROJECT <span aria-hidden="true">↗</span>
           </Link>
         </div>

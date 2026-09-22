@@ -314,7 +314,6 @@
 .header[data-tone="dark"] { color: #eeefea; }
 .header[data-tone="dark"][data-scrolled="true"] { background: rgb(16 17 18 / 84%); border-bottom-color: #ffffff15; }
 .header[data-tone="dark"] .navLink,.header[data-tone="dark"] .login { color: #eeefea; }
-.header[data-tone="dark"] .logo { filter: invert(1) hue-rotate(180deg); }
 .header[data-tone="dark"] .navigation { background-color: transparent; }
 @media(max-width:899px) { .header[data-tone="dark"] .navigation { background: #101112; } }
 
@@ -326,10 +325,15 @@
   border-bottom-color: rgb(243 242 238 / 10%);
   box-shadow: none;
 }
-/* The mark is drawn in black and red; inverting with a hue flip keeps the red. */
-[data-theme="dark"] .logo { filter: invert(1) hue-rotate(180deg); }
 [data-theme="dark"] .navLink { color: #9a9d94; }
 [data-theme="dark"] .navLink:hover,
 [data-theme="dark"] .navLink[aria-current="page"] { color: #f3f2ee; }
 [data-theme="dark"] .login { color: #0b0c0b; background: #f3f2ee; }
 [data-theme="dark"] .login:hover { color: #fff; background: var(--accent); }
+
+/* Two artworks rather than a filter: the dark mark is drawn white with its red keeper. */
+.logoDark { display: none; }
+.header[data-tone="dark"] .logoLight,
+[data-theme="dark"] .logoLight { display: none; }
+.header[data-tone="dark"] .logoDark,
+[data-theme="dark"] .logoDark { display: block; }

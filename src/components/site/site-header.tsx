@@ -68,8 +68,15 @@ export default function SiteHeader({ revealed, tone = "light" }: { revealed: boo
           onClick={() => setMenuOpen(false)}
         >
           <Image
-            className={styles.logo}
+            className={`${styles.logo} ${styles.logoLight}`}
             src="/logo.png"
+            alt=""
+            width={44}
+            height={44}
+          />
+          <Image
+            className={`${styles.logo} ${styles.logoDark}`}
+            src="/logo-dark.png"
             alt=""
             width={44}
             height={44}
