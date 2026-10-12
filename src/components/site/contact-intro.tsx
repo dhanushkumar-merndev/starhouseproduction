@@ -1,13 +1,13 @@
+import { contact } from "./studio-content";
 import styles from "./contact-page.module.css";
 
 /**
- * The ways to reach the studio. The addresses are placeholders until the real
- * ones are supplied — they are kept here, in one list, so swapping them is a
- * single edit rather than a hunt through the markup.
+ * The ways to reach the studio. The phone and email come from `contact` in
+ * studio-content.ts so every place that shows them stays in step.
  */
 const channels = [
-  { label: "WRITE TO US", value: "hello@starproductionhouse.com", href: "mailto:hello@starproductionhouse.com", note: "We reply within two working days." },
-  { label: "CALL THE STUDIO", value: "+91 00000 00000", href: "tel:+910000000000", note: "Mon–Sat, 10:00 – 19:00 IST." },
+  { label: "WRITE TO US", value: contact.email, href: contact.emailHref, note: "We reply within two working days." },
+  { label: "CALL THE STUDIO", value: contact.phone, href: contact.phoneHref, note: "Mon–Sat, 10:00 – 19:00 IST." },
   { label: "THE STUDIO", value: "Chennai, Tamil Nadu", note: "Shoots across India, on request." },
   { label: "ELSEWHERE", value: "Instagram · YouTube", href: "https://instagram.com", note: "Work in progress, most days." },
 ];

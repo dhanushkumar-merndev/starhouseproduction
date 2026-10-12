@@ -83,6 +83,9 @@
 .footer nav { display: flex; gap: 26px; }
 .footer nav a,.backToTop { font: bold 9px var(--font-mono); text-transform: uppercase; text-decoration: none; }
 .footer nav a:hover { color: var(--accent); }
+.footerContact { display: flex; flex-wrap: wrap; gap: 8px 26px; font: bold 9px var(--font-mono); letter-spacing: .06em; }
+.footerContact a { text-decoration: none; }
+.footerContact a:hover { color: var(--accent); }
 .footerBottom { width: 100%; display: flex; justify-content: space-between; border-top: 1px solid #7775; padding-top: 23px; font: 8px var(--font-mono); letter-spacing: .06em; }
 @media(max-width:1000px) { .sectionHeader { align-items: flex-start; flex-direction: column; gap: 20px; } .projects { gap: 10px; } .projectCopy h3 { font-size: 23px; } .projectCopy summary { font-size: 8px; } .servicesSection .sectionHeader { flex-direction: row; } }
 @media(max-width:700px) {

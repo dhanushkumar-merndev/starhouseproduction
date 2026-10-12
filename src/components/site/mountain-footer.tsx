@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { contact } from "./studio-content";
 import styles from "./mountain-footer.module.css";
 
 const navigation = [
@@ -48,6 +49,11 @@ export default function MountainFooter({ staticView = false }: { staticView?: bo
                 <Link key={href} href={href}>{label}</Link>
               ))}
             </nav>
+          </div>
+
+          <div className={styles.contactRow}>
+            <a href={contact.phoneHref}>{contact.phone}</a>
+            <a href={contact.emailHref}>{contact.email}</a>
           </div>
 
           <div className={styles.bottomRow}>

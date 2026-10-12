@@ -1,3 +1,11 @@
+/** The studio's contact details — the single source for the contact page and footers. */
+export const contact = {
+  phone: "+91 96069 52972",
+  phoneHref: "tel:+919606952972",
+  email: "stargrowthhubproduction@gmail.com",
+  emailHref: "mailto:stargrowthhubproduction@gmail.com",
+};
+
 export const services = [
   ["Films", "Stories made for the screen.", "Short films, independent stories, and original content — developed with a strong point of view, thoughtful visuals, and a clear narrative. We handle everything from scripting and casting to final delivery, ensuring your vision is fully realized on screen."],
   ["Commercials", "Make your brand impossible to forget.", "From campaign concepts to the final cut, we shape commercials around an idea, an audience, and the feeling you want to leave behind. Our team brings cinematic quality to projects of all scales, helping you connect deeply with consumers."],
