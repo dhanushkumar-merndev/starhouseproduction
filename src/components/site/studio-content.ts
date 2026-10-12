@@ -4,6 +4,8 @@ export const contact = {
   phoneHref: "tel:+919606952972",
   email: "stargrowthhubproduction@gmail.com",
   emailHref: "mailto:stargrowthhubproduction@gmail.com",
+  addressLines: ["No. 18, 1st Floor, 1st Main", "BSK 1st Stage, Srinivasa Nagar", "80 Feet Main Road", "Bengaluru, Karnataka 560050"],
+  mapHref: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent("No. 18, 1st Main, BSK 1st Stage, Srinivasa Nagar, 80 Feet Main Road, Bengaluru, Karnataka 560050"),
 };
 
 export const services = [

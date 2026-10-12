@@ -54,6 +54,7 @@ export default function MountainFooter({ staticView = false }: { staticView?: bo
           <div className={styles.contactRow}>
             <a href={contact.phoneHref}>{contact.phone}</a>
             <a href={contact.emailHref}>{contact.email}</a>
+            <a href={contact.mapHref} target="_blank" rel="noreferrer">{contact.addressLines.join(", ")}</a>
           </div>
 
           <div className={styles.bottomRow}>

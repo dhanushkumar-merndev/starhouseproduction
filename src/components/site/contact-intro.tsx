@@ -8,7 +8,7 @@ import styles from "./contact-page.module.css";
 const channels = [
   { label: "WRITE TO US", value: contact.email, href: contact.emailHref, note: "We reply within two working days." },
   { label: "CALL THE STUDIO", value: contact.phone, href: contact.phoneHref, note: "Mon–Sat, 10:00 – 19:00 IST." },
-  { label: "THE STUDIO", value: "Chennai, Tamil Nadu", note: "Shoots across India, on request." },
+  { label: "THE STUDIO", value: contact.addressLines.join(", "), href: contact.mapHref, note: "Shoots across India, on request." },
   { label: "ELSEWHERE", value: "Instagram · YouTube", href: "https://instagram.com", note: "Work in progress, most days." },
 ];
 
